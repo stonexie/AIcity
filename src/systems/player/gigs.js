@@ -6,28 +6,28 @@ export function makeGigList(L) {
   const al = L.alley, ov = L.overlook, pr = L.promenade, br = L.bridges[0];
   return [
     {
-      id: 'ramen', fixer: 'WAKAKO', title: 'NOODLE DROP', area: 'NEON AVENUE',
-      text: 'Meet the courier outside the ramen stand', jp: 'ラーメン',
+      id: 'ramen', fixer: '苏小小', title: '片儿川暗桩交接', area: '钱塘霓虹大道',
+      text: '前往奎元片儿川老面馆门外与信使接头', jp: '片儿川',
       pos: [-(L.avenue.roadHalfWidth + 2.2), 0, -18], reward: 850, cred: 4, radius: 3.2,
     },
     {
-      id: 'river', fixer: 'WAKAKO', title: 'SAKURA DEAD DROP', area: 'SAKURA RIVERWALK',
-      text: 'Collect the shard hidden under the cherry trees', jp: '桜',
+      id: 'river', fixer: '苏小小', title: '柳浪闻莺秘钥', area: '柳浪闻莺步道',
+      text: '在西湖沿河繁花树下取回加密数据芯片', jp: '西子湖',
       pos: [(pr.xMin + pr.xMax) / 2, pr.y, -120], reward: 2400, cred: 9, radius: 3.5,
     },
     {
-      id: 'alley', fixer: 'REGINA', title: 'LANTERN ALLEY HANDOFF', area: 'LANTERN ALLEY',
-      text: 'Climb the alley stairs and meet the netrunner', jp: '提灯',
+      id: 'alley', fixer: '白娘子', title: '河坊街灯笼巷密会', area: '御街灯笼巷',
+      text: '拾级而上穿过红灯笼古巷，与黑客会合', jp: '河坊街',
       pos: [al.stairs.xEnd - 6, al.stairs.rise, al.z], reward: 3100, cred: 12, radius: 3.2,
     },
     {
-      id: 'overlook', fixer: 'REGINA', title: 'EYES ON THE SKYLINE', area: 'SKYLINE OVERLOOK',
-      text: 'Take the service lift to the rooftop overlook', jp: '展望',
+      id: 'overlook', fixer: '白娘子', title: '俯瞰钱塘天际线', area: '钱塘天际观景台',
+      text: '搭乘货运升降梯登上顶楼天际观景台', jp: '观景台',
       pos: [ov.position[0], ov.position[1] - 1.7, ov.position[2]], reward: 4200, cred: 15, radius: 4, elevator: true,
     },
     {
-      id: 'bridge', fixer: 'WAKAKO', title: 'BRIDGE RENDEZVOUS', area: 'MIRAI BRIDGE',
-      text: 'Meet the fixer\'s driver at the river crossing', jp: '橋',
+      id: 'bridge', fixer: '苏小小', title: '拱宸桥夜渡接应', area: '拱宸映月桥',
+      text: '在拱宸映月桥头与中间人的专车司机汇合', jp: '拱宸桥',
       pos: [pr.xMax + 6, 0, br.z + 12], reward: 5600, cred: 20, radius: 4,
     },
   ];
@@ -148,7 +148,7 @@ export class Gigs {
     const d2 = Math.hypot(dx, dz);
     const dy = playerPos.y - m.y;
     if (mode === 'foot' && d2 < g.radius && Math.abs(dy) < 2.6) { this.complete(); return null; }
-    if (g.elevator && mode === 'foot' && d2 < 34 && dy < -6) return { key: 'F', text: 'TAKE SERVICE LIFT', action: 'elevator', target: [m.x, m.y, m.z] };
+    if (g.elevator && mode === 'foot' && d2 < 34 && dy < -6) return { key: 'F', text: '搭乘观景升降梯', action: 'elevator', target: [m.x, m.y, m.z] };
     return null;
   }
 

@@ -4,7 +4,7 @@ import { QUALITY_PRESETS } from '../systems/player/settings.js';
 const CONTROLS = [
   ['MOVE', ['W', 'A', 'S', 'D']], ['LOOK', ['MOUSE']], ['SPRINT', ['SHIFT']], ['JUMP', ['SPACE']],
   ['CROUCH', ['C', 'CTRL']], ['CAMERA FP / TP', ['V']], ['ENTER / EXIT VEHICLE', ['F']], ['INTERACT', ['F']],
-  ['TOGGLE HUD', ['H']], ['PAUSE MENU', ['ESC']], ['DRIVE', ['W', 'S']], ['STEER', ['A', 'D']],
+  ['TOGGLE HUD', ['H']], ['BLENDER / TRIPO 3D', ['B']], ['PAUSE MENU', ['ESC']], ['DRIVE', ['W', 'S']],
 ];
 
 const SETTINGS = [
@@ -160,9 +160,10 @@ export class Menus {
   }
 
   onKey(e) {
+    if (document.querySelector('.nk-aibridge.open')) return;
     const state = this.cb.state();
     if (state === 'title') {
-      if (e.code === 'Escape' || e.repeat) return;
+      if (e.code === 'Escape' || e.code === 'KeyB' || e.repeat) return;
       this.cb.start();
       return;
     }

@@ -1,31 +1,28 @@
-// System registry. Order matters (init order). Each system lives in its own folder, owned by one workstream.
-// Systems are loaded with isolated dynamic imports so a broken module never takes down the rest of the game.
-// URL params: ?only=a,b  (load subset)   ?skip=a,b  (exclude)
-const ORDER = [
-  'atmosphere', // sky, fog, volumetrics, environment lighting
-  'ground',     // roads, sidewalks, puddles, wet surface materials
-  'buildings',  // architecture, shopfronts, interiors, rooftop clutter, wires
-  'landmarks',  // elevated rail + train, expressway, river, promenade, cherry trees, bridge, skyline
-  'signage',    // neon signs, holo billboards, lanterns, street lamps (and their lights)
-  'vehicles',   // parked cars, traffic, flying cars, drivable car
-  'crowd',      // pedestrians
-  'weather',    // rain, splashes, drips, mist, lightning
-  'player',     // controller, camera, HUD
-  'audio',      // ambience
-];
+import atmosphere from './atmosphere/index.js';
+import ground from './ground/index.js';
+import buildings from './buildings/index.js';
+import landmarks from './landmarks/index.js';
+import signage from './signage/index.js';
+import vehicles from './vehicles/index.js';
+import crowd from './crowd/index.js';
+import weather from './weather/index.js';
+import player from './player/index.js';
+import audio from './audio/index.js';
 
-const qs = new URLSearchParams(location.search);
-const only = qs.get('only')?.split(',');
-const skip = qs.get('skip')?.split(',') || [];
+const ALL = [
+  ['atmosphere', atmosphere],
+  ['ground', ground],
+  ['buildings', buildings],
+  ['landmarks', landmarks],
+  ['signage', signage],
+  ['vehicles', vehicles],
+  ['crowd', crowd],
+  ['weather', weather],
+  ['player', player],
+  ['audio', audio],
+].map(([name, sys]) => Object.assign(sys, { name }));
 
-const loaded = await Promise.all(ORDER.filter((n) => (!only || only.includes(n)) && !skip.includes(n)).map(async (name) => {
-  try {
-    const mod = await import(`./${name}/index.js`);
-    return { name, ...mod.default };
-  } catch (e) {
-    console.error(`[systems] failed to load "${name}"`, e);
-    return null;
-  }
-}));
+const onlyParam = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('only') : null;
+const onlySet = onlyParam ? new Set(onlyParam.split(',').map((s) => s.trim()).filter(Boolean)) : null;
 
-export const SYSTEMS = loaded.filter(Boolean);
+export const SYSTEMS = onlySet ? ALL.filter((s) => onlySet.has(s.name)) : ALL;

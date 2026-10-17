@@ -26,7 +26,19 @@ function carPosition(car) {
   if (!car) return null;
   return car.position?.isVector3 ? car.position : car.object?.position || car.mesh?.position || car.group?.position || null;
 }
-function carObject(car) { return car?.object || car?.mesh || car?.group || (car?.isObject3D ? car : null); }
+const CN_CAR_NAMES = {
+  hero: '西子智驾·凌波超跑',
+  kei: '江南轻型代步车',
+  taxi: '钱塘礼宾出租',
+  van: '武林货运厢车',
+  av: '雷峰重工·浮空艇',
+};
+function cnCarName(car) {
+  if (!car) return '智能载具';
+  const raw = (car.name || car.model || car.type || '').toString().toLowerCase();
+  for (const [k, v] of Object.entries(CN_CAR_NAMES)) if (raw.includes(k)) return v;
+  return (car.name || car.model || '智能载具').toString();
+}
 
 export default {
   async init(ctx) {
@@ -96,11 +108,21 @@ export default {
 
     document.addEventListener('pointerlockchange', () => {
       const locked = document.pointerLockElement === ctx.renderer.domElement;
-      if (locked) this.hadLock = true;
-      else if (this.state === 'playing' && this.hadLock) this.pause();
+      if (locked) {
+        this.hadLock = true;
+        if (this.hud?.aiBridge?.open) this.hud.aiBridge.toggle(false);
+      } else if (this.state === 'playing' && this.hadLock && !ctx.uiModalOpen) {
+        this.pause();
+      }
+    });
+    ctx.renderer.domElement.addEventListener('click', () => {
+      if (this.state === 'playing' && !ctx.uiModalOpen && !document.pointerLockElement) {
+        this.lockPointer();
+      }
     });
     addEventListener('keydown', (e) => {
       if (e.code !== 'Escape') return;
+      if (this.hud?.aiBridge?.open) { this.hud.aiBridge.toggle(false); return; }
       if (this.state === 'playing') this.pause();
       else if (this.state === 'paused' && performance.now() - this.pausedAt > 300) this.resume(false);
     });

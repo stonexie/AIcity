@@ -1,24 +1,30 @@
-// Runtime sign-art atlases rendered with Canvas2D (Windows JP fonts: Yu Gothic / Meiryo / MS Gothic).
+// Runtime sign-art atlases rendered with Canvas2D (Chinese & Jiangnan calligraphy fonts).
 //  - NeonAtlas: linear data mask. R = tube profile (soft core), G = wide halo, B = segment id (per glyph) for broken/flicker.
 //    Tint is applied per-vertex in the shader so one mask can be reused in any colour.
 //  - ColorAtlas: sRGB full-colour art for light boxes, posters, road signs, lantern paper, screens.
 import * as THREE from 'three/webgpu';
 
 export const FONTS = {
-  goth: '"Yu Gothic", "YuGothic", "Meiryo", sans-serif',
-  meiryo: '"Meiryo", "Yu Gothic", sans-serif',
-  msgoth: '"MS Gothic", "Yu Gothic", monospace',
-  mincho: '"Yu Mincho", "MS Mincho", serif',
-  bahn: '"Bahnschrift", "Arial Narrow", sans-serif',
-  script: '"Segoe Script", "Brush Script MT", cursive',
-  impact: 'Impact, "Arial Black", sans-serif',
-  arial: '"Arial Black", Arial, sans-serif',
+  goth: '"PingFang SC", "Microsoft YaHei", "Noto Sans SC", "Hiragino Sans GB", "Heiti SC", sans-serif',
+  meiryo: '"Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif',
+  msgoth: '"Noto Sans SC", "PingFang SC", "Microsoft YaHei", monospace',
+  mincho: '"Kaiti SC", "STKaiti", "KaiTi", "Songti SC", "SimSun", "Noto Serif SC", serif',
+  bahn: '"Chakra Petch", "Rajdhani", "PingFang SC", "Microsoft YaHei", sans-serif',
+  script: '"Kaiti SC", "STKaiti", "KaiTi", "Xingkai SC", "STXingkai", cursive',
+  impact: '"PingFang SC", "Microsoft YaHei", Impact, "Arial Black", sans-serif',
+  arial: '"PingFang SC", "Microsoft YaHei", "Arial Black", Arial, sans-serif',
 };
 
 export async function loadFonts() {
-  const tries = ['300 64px "Yu Gothic"', '700 64px "Yu Gothic"', '400 64px "Meiryo"', '700 64px "Meiryo"', '400 64px "MS Gothic"',
-    '400 64px "Yu Mincho"', '700 64px "Bahnschrift"', '400 64px "Segoe Script"', '400 64px Impact', '900 64px "Arial Black"'];
-  try { await Promise.all(tries.map((f) => document.fonts.load(f, 'ラーメンABC居酒屋'))); } catch (e) { /* system fonts */ }
+  const tries = [
+    '400 64px "PingFang SC"',
+    '700 64px "PingFang SC"',
+    '400 64px "Microsoft YaHei"',
+    '700 64px "Microsoft YaHei"',
+    '700 64px "Kaiti SC"',
+    '700 64px "Songti SC"',
+  ];
+  try { await Promise.all(tries.map((f) => document.fonts.load(f, '西湖龙井片儿川钱塘江南茶馆'))); } catch (e) { /* system fonts */ }
 }
 
 class Packer {
@@ -46,9 +52,8 @@ function layoutText(it) {
     const total = step * chars.length;
     let y = it.y - total / 2 + step / 2;
     for (const ch of chars) {
-      const rot = (ch === 'ー' || ch === '-' || ch === '〜' || ch === '…') ? Math.PI / 2 : 0;
-      const small = 'ャュョッァィゥェォゃゅょっぁぃぅぇぉ'.includes(ch);
-      out.push({ ...it, ch, x: it.x + (small ? it.size * 0.1 : 0), y: y - (small ? it.size * 0.1 : 0), rot, sz: small ? it.size * 0.8 : it.size });
+      const rot = (ch === 'ー' || ch === '-' || ch === '—' || ch === '～' || ch === '〜' || ch === '…') ? Math.PI / 2 : 0;
+      out.push({ ...it, ch, x: it.x, y, rot, sz: it.size });
       y += step;
     }
   } else {
@@ -214,7 +219,7 @@ export function textVertical(g, text, x, y0, y1, font, weight, maxW, fill, strok
   chars.forEach((ch, i) => {
     const cy = y0 + step * (i + 0.5);
     g.save(); g.translate(x, cy);
-    if (ch === 'ー' || ch === '-') g.rotate(Math.PI / 2);
+    if (ch === 'ー' || ch === '-' || ch === '—') g.rotate(Math.PI / 2);
     g.font = `${weight} ${size}px ${font}`;
     const m = g.measureText(ch);
     const yo = (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;

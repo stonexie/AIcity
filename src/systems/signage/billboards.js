@@ -109,16 +109,106 @@ function mkRingMaterial(colorTex, uvr, tint) {
   return m;
 }
 
+function customizeMiraiBillboard(baseTex) {
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = 1536;
+  const g = c.getContext('2d');
+  if (baseTex?.image) g.drawImage(baseTex.image, 0, 0, 1024, 1536);
+  else { g.fillStyle = '#120824'; g.fillRect(0, 0, 1024, 1536); }
+  // Overlay top & bottom bands to replace Japanese text with Hangzhou Jiangnan cyber typography
+  const topGrad = g.createLinearGradient(0, 0, 0, 360);
+  topGrad.addColorStop(0, 'rgba(10, 16, 36, 0.96)');
+  topGrad.addColorStop(0.75, 'rgba(18, 12, 42, 0.85)');
+  topGrad.addColorStop(1, 'rgba(18, 12, 42, 0)');
+  g.fillStyle = topGrad; g.fillRect(0, 0, 1024, 360);
+
+  const botGrad = g.createLinearGradient(0, 1120, 0, 1536);
+  botGrad.addColorStop(0, 'rgba(14, 10, 32, 0)');
+  botGrad.addColorStop(0.28, 'rgba(14, 10, 32, 0.9)');
+  botGrad.addColorStop(1, 'rgba(8, 6, 22, 0.98)');
+  g.fillStyle = botGrad; g.fillRect(0, 1120, 1024, 416);
+
+  g.textAlign = 'center';
+  g.fillStyle = '#5ef6ff';
+  g.font = '700 42px "PingFang SC", "Microsoft YaHei", sans-serif';
+  g.fillText('◆ 杭州江南 · 二零七七 ◆', 512, 86);
+  g.fillStyle = '#ffffff';
+  g.shadowColor = '#ff48b8'; g.shadowBlur = 24;
+  g.font = '900 132px "Kaiti SC", "STKaiti", "PingFang SC", serif';
+  g.fillText('烟雨钱塘', 512, 226);
+  g.shadowBlur = 0;
+
+  g.fillStyle = '#ffe24a';
+  g.font = '900 92px "PingFang SC", "Microsoft YaHei", sans-serif';
+  g.fillText('西子云端 · 智造未来', 512, 1340);
+  g.fillStyle = '#ff72c8';
+  g.font = '700 44px "PingFang SC", "Microsoft YaHei", sans-serif';
+  g.fillText('钱塘科技集团 · 灵隐量子算力中心', 512, 1425);
+  g.strokeStyle = '#5ef6ff'; g.lineWidth = 4;
+  g.strokeRect(48, 1460, 928, 42);
+  g.fillStyle = '#5ef6ff';
+  g.font = '700 26px "PingFang SC", "Microsoft YaHei", sans-serif';
+  g.fillText('西湖景区全息专线 · 廿四小时低空摆渡已开通', 512, 1490);
+
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.NoColorSpace;
+  t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+  t.needsUpdate = true;
+  return t;
+}
+
+function customizeAdsGrid(baseTex) {
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = 1024;
+  const g = c.getContext('2d');
+  if (baseTex?.image) g.drawImage(baseTex.image, 0, 0, 1024, 1024);
+  const cells = [
+    { x: 0, y: 0, top: '钱塘科技 · 西子智驾', main: '凌波飞车', sub: '西湖环线 · 零延迟智驾轿跑', acc: '#48f0ff' },
+    { x: 512, y: 0, top: '江南霓裳 · 虚拟偶像', main: '苏小小 2077', sub: '武林全息戏台 · 每晚八点公演', acc: '#ff58c8' },
+    { x: 0, y: 512, top: '明前狮峰 · 赛博茶道', main: '西湖龙井', sub: '灵隐高山云雾 · 冷萃纳米茶饮', acc: '#5effa8' },
+    { x: 512, y: 512, top: '百年名点 · 河坊夜市', main: '知味小笼', sub: '片儿川 · 定胜糕 · 廿四小时热供', acc: '#ffd248' },
+  ];
+  for (const cl of cells) {
+    const gr = g.createLinearGradient(cl.x, cl.y, cl.x, cl.y + 512);
+    gr.addColorStop(0, 'rgba(10, 14, 28, 0.82)');
+    gr.addColorStop(0.45, 'rgba(10, 14, 28, 0.25)');
+    gr.addColorStop(0.75, 'rgba(10, 14, 28, 0.88)');
+    gr.addColorStop(1, 'rgba(8, 10, 22, 0.96)');
+    g.fillStyle = gr;
+    g.fillRect(cl.x, cl.y, 512, 512);
+    g.strokeStyle = cl.acc; g.lineWidth = 6;
+    g.strokeRect(cl.x + 14, cl.y + 14, 484, 484);
+    g.textAlign = 'center';
+    g.fillStyle = cl.acc;
+    g.font = '800 28px "PingFang SC", "Microsoft YaHei", sans-serif';
+    g.fillText(cl.top, cl.x + 256, cl.y + 62);
+    g.fillStyle = '#ffffff';
+    g.shadowColor = cl.acc; g.shadowBlur = 18;
+    g.font = '900 84px "Kaiti SC", "STKaiti", "PingFang SC", serif';
+    g.fillText(cl.main, cl.x + 256, cl.y + 408);
+    g.shadowBlur = 0;
+    g.fillStyle = cl.acc;
+    g.font = '700 26px "PingFang SC", "Microsoft YaHei", sans-serif';
+    g.fillText(cl.sub, cl.x + 256, cl.y + 466);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.NoColorSpace;
+  t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+  t.needsUpdate = true;
+  return t;
+}
+
 export async function buildBillboards(ctx, sb, L, pool, facades) {
   const { scene, assets, layout, camera } = ctx;
-  const [miraiTex, adsTex] = await Promise.all([
+  const [rawMirai, rawAds] = await Promise.all([
     assets.texture('textures/signage/billboard_mirai.png', { srgb: false }),
     assets.texture('textures/signage/ads_grid.png', { srgb: false }),
   ]);
-  for (const t of [miraiTex, adsTex]) if (t) { t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.needsUpdate = true; }
+  const miraiTex = customizeMiraiBillboard(rawMirai);
+  const adsTex = customizeAdsGrid(rawAds);
   const updaters = [];
 
-  // ---------- 未来へ billboard: placed so it sits left-of-centre in the overlook view (ref panel 2)
+  // ---------- 烟雨钱塘 billboard: placed so it sits left-of-centre in the overlook view (ref panel 2)
   const ov = new THREE.Vector3(...layout.overlook.position);
   const look = new THREE.Vector3(...layout.overlook.lookAt);
   const fwd = look.clone().sub(ov).setY(0).normalize();
@@ -176,8 +266,8 @@ export async function buildBillboards(ctx, sb, L, pool, facades) {
     for (const [sx, sy, c] of [[-0.3, -0.3, [1, 0.3, 0.7]], [0.3, -0.3, [0.7, 0.3, 1]], [0, 0.3, [1, 0.45, 0.8]], [0, -0.55, [0.9, 0.35, 0.9]]]) {
       pool.add({ pos: center.clone().addScaledVector(bRight, sx * bbW).addScaledVector(normal, 4).add(new THREE.Vector3(0, sy * bbH, 0)), color: c, intensity: 160, distance: 24, seed: 1, ftype: 0, importance: 4 });
     }
-    // KAZE TECH channel letters above the billboard
-    const kz = L.chanH.find((d) => d.text === 'KAZE TECH');
+    // 钱塘科技 channel letters above the billboard
+    const kz = L.chanH.find((d) => d.text === '钱塘科技') || L.chanH[0];
     if (kz) {
       const kW = 15, kH = kW / kz.aspect;
       const kc = center.clone().addScaledVector(normal, 0.3); kc.y = center.y + bbH / 2 + 1.4 + kH / 2;

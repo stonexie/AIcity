@@ -1,12 +1,14 @@
 // In-game HUD (Cyberpunk-2077 style). Pure DOM/CSS overlay inside #hud.
 import './hud.css';
 import { Minimap } from './minimap.js';
+import { AIBridgePanel } from './aiBridgePanel.js';
 
 const ICON = {
   rain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 15a4 4 0 0 1-.6-7.96A5.5 5.5 0 0 1 17 7.5a3.75 3.75 0 0 1 .5 7.5H7z"/><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/></svg>',
   eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M12 9v-1.5M15 12h1.5"/></svg>',
   car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 15v-3l2.2-4.4A2 2 0 0 1 7 6.5h10a2 2 0 0 1 1.8 1.1L21 12v3a1 1 0 0 1-1 1h-1.5M5.5 16H4a1 1 0 0 1-1-1M8.5 16h7"/><circle cx="7" cy="16" r="1.8"/><circle cx="17" cy="16" r="1.8"/><path d="M5 12h14"/></svg>',
   hud: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7V4h3M18 4h3v3M21 17v3h-3M6 20H3v-3"/><path d="M8 12h8M12 8v8"/></svg>',
+  cube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg>',
   stand: '<svg viewBox="0 0 22 30" fill="currentColor"><circle cx="11" cy="4" r="3"/><path d="M7 9h8l1 9h-2l-1 11h-2.2l-.8-8-.8 8H7l-1-11H4z"/></svg>',
   run: '<svg viewBox="0 0 22 30" fill="currentColor"><circle cx="13" cy="4" r="3"/><path d="M9 9l6 1 2 6-2 .6-1.4-3.6-1.6 5 4 4-1 6.5-2.2-.4.8-5.2-4-3.6L6 26l-2-1 3.3-8.3L8 12l-3 3-1.4-1.5z"/></svg>',
   crouch: '<svg viewBox="0 0 22 30" fill="currentColor"><circle cx="12" cy="10" r="3"/><path d="M7 14h9l1 6-2 .5-1 2.5 3 6h-2.4l-3-5-2 5H7l1.6-6.5L6 20z"/></svg>',
@@ -112,10 +114,12 @@ export class HUD {
         <div class="nk-slotw" data-s="v"><div class="nk-slot">${ICON.eye}</div><span class="nk-key">V</span><span class="lb">VIEW</span></div>
         <div class="nk-slotw" data-s="f"><div class="nk-slot">${ICON.car}</div><span class="nk-key">F</span><span class="lb">VEHICLE</span></div>
         <div class="nk-slotw" data-s="h"><div class="nk-slot">${ICON.hud}</div><span class="nk-key">H</span><span class="lb">HUD</span></div>
+        <div class="nk-slotw" data-s="b" style="pointer-events:auto;cursor:pointer"><div class="nk-slot">${ICON.cube}</div><span class="nk-key">B</span><span class="lb">3D/MCP</span></div>
       </div>
       <div class="tiny">CONNECTION 2077.11.04 · NODE KBK-09 · <span class="fps"></span></div>`);
     hud.appendChild(bl);
     this.slotV = bl.querySelector('[data-s="v"]'); this.slotF = bl.querySelector('[data-s="f"]');
+    this.slotB = bl.querySelector('[data-s="b"]');
     this.fpsEl = bl.querySelector('.fps');
 
     // --- bottom-right stance + speedometer
@@ -128,6 +132,10 @@ export class HUD {
     this.speedNum = this.speedo.querySelector('.num'); this.speedGear = this.speedo.querySelector('.gear'); this.speedCar = this.speedo.querySelector('.car');
 
     this.glitch = el('div', 'nk-glitchbar'); hud.appendChild(this.glitch);
+
+    // --- Local Blender MCP + Leihuo Tripo 3D Studio Panel
+    this.aiBridge = new AIBridgePanel(ctx, this);
+    this.slotB.addEventListener('click', (e) => { e.stopPropagation(); this.aiBridge.toggle(); });
 
     this._last = {};
     this.clock = 23 * 60 + 47;

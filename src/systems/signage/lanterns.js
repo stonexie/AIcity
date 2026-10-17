@@ -43,7 +43,7 @@ export async function buildLanterns(ctx, L, colorTex, pool, featured) {
   const caps = new Batch({ pivot: 3, cell: 4, lp: 4 });
   const wires = new Batch({ pivot: 3, cell: 4, lp: 4 });
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
-  const cellOf = (t) => { const r = L.lanternCells[t] || L.lanternCells['祭']; const uvr = r.uv; return [uvr[0], uvr[1], uvr[2] - uvr[0], uvr[3] - uvr[1]]; };
+  const cellOf = (t) => { const r = L.lanternCells[t] || L.lanternCells['杭']; const uvr = r.uv; return [uvr[0], uvr[1], uvr[2] - uvr[0], uvr[3] - uvr[1]]; };
   let seed = 1;
   let lightCount = 0;
 
@@ -93,7 +93,7 @@ export async function buildLanterns(ctx, L, colorTex, pool, featured) {
     }
   }
   // strings across the alley (catenary wire, lanterns hang on short cords)
-  const textsA = ['祭', '酒', '提灯', '居', '串', '焼鳥'];
+  const textsA = ['杭', '茶', '酒', '西湖', '龙井', '知味'];
   for (const s of featured.lanternStrings) {
     wire(s.a, s.b, s.sag, 0.006);
     for (let i = 0; i < s.count; i++) {
@@ -107,7 +107,7 @@ export async function buildLanterns(ctx, L, colorTex, pool, featured) {
     pool.add({ pos: mid, color: [1, 0.25, 0.07], intensity: 4, distance: 8, seed: 1, ftype: 0, importance: 1.6 });
     lightCount++;
   }
-  // tall cylindrical lanterns (やきとり)
+  // tall cylindrical lanterns (叫花鸡)
   for (const tl of featured.tallLanterns) {
     const p = tl.pos.clone(); p.y += 1.95;
     hang(T, p, Math.PI / 2, tl.text, 1, 1.1, 1, 0.25);
@@ -125,7 +125,7 @@ export async function buildLanterns(ctx, L, colorTex, pool, featured) {
       if (layout.bridges.some((b) => Math.abs(b.z - z) < 8)) continue;
       const pos = new THREE.Vector3(pr.xMax - 0.9, pr.y, z);
       m4.compose(pos, q.identity(), sc.set(1, 1, 1));
-      const a = { pivot: [pos.x, pos.y, pos.z], cell: cellOf('祭'), lp: [seed++, 1, 0, 2] };
+      const a = { pivot: [pos.x, pos.y, pos.z], cell: cellOf('杭'), lp: [seed++, 1, 0, 2] };
       andon.geometry(A.paper.geometry, m4, a);
       andonFrame.geometry(A.frame.geometry, m4, a);
       if (k++ % 1 === 0) { pool.add({ pos: pos.clone().add(new THREE.Vector3(0, 0.55, 0)), color: [1, 0.68, 0.38], intensity: 2.5, distance: 7, seed: 1, ftype: 0, importance: 1.2 }); lightCount++; }
